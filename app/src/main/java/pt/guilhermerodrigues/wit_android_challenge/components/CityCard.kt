@@ -31,11 +31,11 @@ fun CityCard(
                     Text(text = designation)
                 }
             }
-            Row(modifier = Modifier.padding(top = 16.dp)) {
+            /*Row(modifier = Modifier.padding(top = 16.dp)) {
                 city.weather?.let { weather ->
                     Text(text = weather)
                 }
-            }
+            }*/
             //etc
         }
     }

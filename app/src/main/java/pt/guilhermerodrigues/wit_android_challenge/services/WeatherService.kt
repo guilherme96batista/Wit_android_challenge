@@ -7,6 +7,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import pt.guilhermerodrigues.wit_android_challenge.models.City
 import pt.guilhermerodrigues.wit_android_challenge.models.Weather
 
 
@@ -32,18 +33,40 @@ class WeatherService (context : Context) {
     var weather = respMap?.get("weather") as List<Map<String, Any>>
     */
 
-    fun getWeather(cityName : String) : Weather{
-        val url = BASE_URL + "q=" + cityName + "&appid=" + API_KEY + "&units=metric"
+    fun getWeather(city : City){
+        val url = BASE_URL + "q=" + city.designation + "&appid=" + API_KEY + "&units=metric"
 
         val stringRequest = StringRequest(Request.Method.POST, url,
             { response ->
                 Log.d("response", response)
+                //parse the json
+                val weather = Gson().fromJson(response, Weather::class.java)
+                city.weather = weather
+
             },
             null)
 
         requestQueue.add(stringRequest)
 
-        //build the model object from the response and return it
-        return Weather(null, null, null, null)
+    }
+
+    fun getWeatherByCoord(lat : Double, lon : Double) : City{
+        val url = BASE_URL + "lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=metric"
+
+        val stringRequest = StringRequest(Request.Method.POST, url,
+            { response ->
+                Log.d("response", response)
+                //parse the json
+                val weather = Gson().fromJson(response, Weather::class.java)
+                //city.weather = weather
+
+            },
+            null)
+
+        requestQueue.add(stringRequest)
+
+
+        //get the name of the city and other information from Json
+        return City("",null, null, null)
     }
 }
