@@ -19,7 +19,7 @@ fun HomeScreen(
 
     ){
         item {
-            CityCard(city = City("asidja", "asodk"), onClick = {
+            CityCard(city = City("asidja", "asodk", null), onClick = {
                 navController.navigate(Routes.cityDetails(-1))
             })
 
