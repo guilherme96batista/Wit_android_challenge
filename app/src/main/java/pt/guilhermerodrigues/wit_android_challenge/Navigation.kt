@@ -1,5 +1,6 @@
 package pt.guilhermerodrigues.wit_android_challenge
 
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.material.MaterialTheme
@@ -28,10 +29,8 @@ object Routes {
 
 @Preview
 @Composable
-fun Navigation() {
+fun Navigation(context : Context, viewModel : HomeViewModel) {
     val navController = rememberNavController()
-    val viewModel: HomeViewModel = viewModel(LocalContext.current as ComponentActivity)
-
 
     NavHost(
         navController = navController,

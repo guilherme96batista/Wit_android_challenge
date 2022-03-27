@@ -3,6 +3,9 @@ package pt.guilhermerodrigues.wit_android_challenge.views
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import pt.guilhermerodrigues.wit_android_challenge.Routes
@@ -19,10 +22,9 @@ fun HomeScreen(
 
     ){
         item {
-            CityCard(city = City("asidja", null,null, null), onClick = {
-                navController.navigate(Routes.cityDetails(-1))
+            CityCard(city = viewModel.myCity.value, onClick = {
+                    navController.navigate(Routes.cityDetails(-1))
             })
-
         }
         //items() is for items which you don't need the index
         itemsIndexed(

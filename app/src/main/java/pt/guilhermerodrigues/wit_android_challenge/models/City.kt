@@ -1,7 +1,7 @@
 package pt.guilhermerodrigues.wit_android_challenge.models
 
 data class City (
-    val designation : String?,
+    var designation : String?,
     var main : Main?,
     var weather : Weather?,
     var wind : Wind?,

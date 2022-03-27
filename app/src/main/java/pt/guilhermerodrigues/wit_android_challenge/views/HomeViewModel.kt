@@ -1,23 +1,34 @@
 package pt.guilhermerodrigues.wit_android_challenge.views
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Bundle
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import pt.guilhermerodrigues.wit_android_challenge.models.City
-import pt.guilhermerodrigues.wit_android_challenge.models.Weather
-import pt.guilhermerodrigues.wit_android_challenge.services.LocationService
 import pt.guilhermerodrigues.wit_android_challenge.services.WeatherService
 
+@SuppressLint("MissingPermission")
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
+    @SuppressLint("StaticFieldLeak")
     private val context = getApplication<Application>().applicationContext
-    var myCity = City(null, null, null, null)
+    val myCity = mutableStateOf(City("waiting for your location", null, null, null))
     val cities = mutableListOf<City>()
     val weatherService = WeatherService(context)
-    //val coords = LocationService(context).getLocation()
+
+
+    private var currentLocation: Location? = null
+    lateinit var locationManager: LocationManager
+
+
 
     init {
-        //myCity = weatherService.getWeatherByCoord(coords.latitude, coords.longitude)
+        gps()
         initCities()
         loadCities()
     }
@@ -37,6 +48,30 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private fun loadCities(){
         for (city in cities){
             weatherService.getWeather(city)
+        }
+    }
+
+    private fun gps(){
+        locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        val hasGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+        val gpsLocationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                currentLocation = location
+                currentLocation?.let {
+                    if(myCity.value.designation == "waiting for your location") {
+                        weatherService.getWeatherByCoord(currentLocation!!.latitude, currentLocation!!.longitude, myCity)
+                    }
+                }
+            }
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle) {
+            }
+        }
+        if (hasGps) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                50, 0f, gpsLocationListener)
         }
     }
 

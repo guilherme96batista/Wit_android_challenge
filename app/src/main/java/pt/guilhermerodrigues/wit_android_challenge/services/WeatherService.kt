@@ -2,6 +2,7 @@ package pt.guilhermerodrigues.wit_android_challenge.services
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -44,6 +45,7 @@ class WeatherService (context : Context) {
                 val jsonObject = JSONObject(response)
                 val jsonArray = jsonObject.getJSONArray("weather")
                 var jsonObjectAux = jsonArray.getJSONObject(0)
+                city.designation = jsonObject.getString("name")
                 city.weather = Weather(jsonObjectAux.getInt("id"), jsonObjectAux.getString("main"), jsonObjectAux.getString("description"), jsonObjectAux.getString("icon"))
                 jsonObjectAux = jsonObject.getJSONObject("main")
                 city.main = Main(jsonObjectAux.getDouble("temp"), jsonObjectAux.getDouble("feels_like"),
@@ -57,10 +59,8 @@ class WeatherService (context : Context) {
         requestQueue.add(stringRequest)
     }
 
-    fun getWeatherByCoord(lat : Double, lon : Double) : City{
+    fun getWeatherByCoord(lat: Double, lon: Double, city: MutableState<City>){
         val url = BASE_URL + "lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=metric"
-        var city =  City("",null, null, null)
-
         val stringRequest = StringRequest(Request.Method.POST, url,
             { response ->
                 val jsonObject = JSONObject(response)
@@ -74,12 +74,11 @@ class WeatherService (context : Context) {
                     jsonObjectAux.getDouble("pressure"), jsonObjectAux.getDouble("humidity"))
                 jsonObjectAux = jsonObject.getJSONObject("wind")
                 cityAux.wind = Wind(jsonObjectAux.getDouble("speed"), jsonObjectAux.getDouble("deg"))
-                city = cityAux
+                city.value = cityAux
             },
             null)
 
         requestQueue.add(stringRequest)
 
-        return city
     }
 }
