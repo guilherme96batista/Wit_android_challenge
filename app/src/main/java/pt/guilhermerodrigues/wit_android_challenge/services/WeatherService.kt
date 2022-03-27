@@ -7,8 +7,11 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 import pt.guilhermerodrigues.wit_android_challenge.models.City
+import pt.guilhermerodrigues.wit_android_challenge.models.Main
 import pt.guilhermerodrigues.wit_android_challenge.models.Weather
+import pt.guilhermerodrigues.wit_android_challenge.models.Wind
 
 
 //write a service to fetch the weather data from openweather api
@@ -38,35 +41,45 @@ class WeatherService (context : Context) {
 
         val stringRequest = StringRequest(Request.Method.POST, url,
             { response ->
-                Log.d("response", response)
-                //parse the json
-                val weather = Gson().fromJson(response, Weather::class.java)
-                city.weather = weather
-
+                val jsonObject = JSONObject(response)
+                val jsonArray = jsonObject.getJSONArray("weather")
+                var jsonObjectAux = jsonArray.getJSONObject(0)
+                city.weather = Weather(jsonObjectAux.getInt("id"), jsonObjectAux.getString("main"), jsonObjectAux.getString("description"), jsonObjectAux.getString("icon"))
+                jsonObjectAux = jsonObject.getJSONObject("main")
+                city.main = Main(jsonObjectAux.getDouble("temp"), jsonObjectAux.getDouble("feels_like"),
+                    jsonObjectAux.getDouble("temp_min"), jsonObjectAux.getDouble("temp_max"),
+                    jsonObjectAux.getDouble("pressure"), jsonObjectAux.getDouble("humidity"))
+                jsonObjectAux = jsonObject.getJSONObject("wind")
+                city.wind = Wind(jsonObjectAux.getDouble("speed"), jsonObjectAux.getDouble("deg"))
             },
             null)
 
         requestQueue.add(stringRequest)
-
     }
 
     fun getWeatherByCoord(lat : Double, lon : Double) : City{
         val url = BASE_URL + "lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY + "&units=metric"
+        var city =  City("",null, null, null)
 
         val stringRequest = StringRequest(Request.Method.POST, url,
             { response ->
-                Log.d("response", response)
-                //parse the json
-                val weather = Gson().fromJson(response, Weather::class.java)
-                //city.weather = weather
-
+                val jsonObject = JSONObject(response)
+                var cityAux = City(jsonObject.getString("name"),null, null, null)
+                val jsonArray = jsonObject.getJSONArray("weather")
+                var jsonObjectAux = jsonArray.getJSONObject(0)
+                cityAux.weather = Weather(jsonObjectAux.getInt("id"), jsonObjectAux.getString("main"), jsonObjectAux.getString("description"), jsonObjectAux.getString("icon"))
+                jsonObjectAux = jsonObject.getJSONObject("main")
+                cityAux.main = Main(jsonObjectAux.getDouble("temp"), jsonObjectAux.getDouble("feels_like"),
+                    jsonObjectAux.getDouble("temp_min"), jsonObjectAux.getDouble("temp_max"),
+                    jsonObjectAux.getDouble("pressure"), jsonObjectAux.getDouble("humidity"))
+                jsonObjectAux = jsonObject.getJSONObject("wind")
+                cityAux.wind = Wind(jsonObjectAux.getDouble("speed"), jsonObjectAux.getDouble("deg"))
+                city = cityAux
             },
             null)
 
         requestQueue.add(stringRequest)
 
-
-        //get the name of the city and other information from Json
-        return City("",null, null, null)
+        return city
     }
 }

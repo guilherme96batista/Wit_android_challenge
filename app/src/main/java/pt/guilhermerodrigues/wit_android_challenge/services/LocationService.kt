@@ -9,7 +9,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 
 class LocationService (val context: Context) {
     val location = FusedLocationProviderClient(context)
-    lateinit var coords : Location
+    var coords = Location("")
 
     fun getLocation() : Location {
         if (ActivityCompat.checkSelfPermission(
@@ -29,7 +29,8 @@ class LocationService (val context: Context) {
             // for ActivityCompat#requestPermissions for more details.
         }
         location.lastLocation.addOnSuccessListener { coord->
-            coords = coord
+            coords.latitude = coord.latitude
+            coords.longitude = coord.longitude
         }
         return coords
     }

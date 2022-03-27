@@ -11,16 +11,15 @@ import pt.guilhermerodrigues.wit_android_challenge.services.WeatherService
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val context = getApplication<Application>().applicationContext
-    lateinit var myCity : City
+    var myCity = City(null, null, null, null)
     val cities = mutableListOf<City>()
     val weatherService = WeatherService(context)
-    val coords = LocationService(context).getLocation()
+    //val coords = LocationService(context).getLocation()
 
     init {
-        myCity = weatherService.getWeatherByCoord(coords.latitude, coords.longitude)
+        //myCity = weatherService.getWeatherByCoord(coords.latitude, coords.longitude)
         initCities()
-        //loadCities()
-        weatherService.getWeather(myCity)
+        loadCities()
     }
     private fun initCities(){
         cities.add(City("Lisboa", null, null, null))
