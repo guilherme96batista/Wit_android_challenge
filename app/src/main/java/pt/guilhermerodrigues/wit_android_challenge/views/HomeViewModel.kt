@@ -18,7 +18,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     @SuppressLint("StaticFieldLeak")
     private val context = getApplication<Application>().applicationContext
     val myCity = mutableStateOf(City("waiting for your location", null, null, null))
-    val cities = mutableListOf<City>()
+    val cities = mutableStateOf(ArrayList<City>())
+    @SuppressLint("MutableCollectionMutableState")
     val weatherService = WeatherService(context)
 
 
@@ -33,20 +34,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         loadCities()
     }
     private fun initCities(){
-        cities.add(City("Lisboa", null, null, null))
-        cities.add(City("Madrid", null, null, null))
-        cities.add(City("Paris", null, null, null))
-        cities.add(City("Berlin", null, null, null))
-        cities.add(City("Copenhagen", null, null, null))
-        cities.add(City("Roma", null, null, null))
-        cities.add(City("London", null, null, null))
-        cities.add(City("Dublin", null, null, null))
-        cities.add(City("Prague", null, null, null))
-        cities.add(City("Vienna", null, null, null))
+        cities.value.add(City("Lisboa", null, null, null))
+        cities.value.add(City("Madrid", null, null, null))
+        cities.value.add(City("Paris", null, null, null))
+        cities.value.add(City("Berlin", null, null, null))
+        cities.value.add(City("Copenhagen", null, null, null))
+        cities.value.add(City("Roma", null, null, null))
+        cities.value.add(City("London", null, null, null))
+        cities.value.add(City("Dublin", null, null, null))
+        cities.value.add(City("Prague", null, null, null))
+        cities.value.add(City("Vienna", null, null, null))
     }
 
     private fun loadCities(){
-        for (city in cities){
+        for (city in cities.value){
             weatherService.getWeather(city)
         }
     }

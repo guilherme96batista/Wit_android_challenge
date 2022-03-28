@@ -26,9 +26,8 @@ fun HomeScreen(
                     navController.navigate(Routes.cityDetails(-1))
             })
         }
-        //items() is for items which you don't need the index
         itemsIndexed(
-            items = viewModel.cities
+            items = viewModel.cities.value
         ){ index, city ->
             city?.let {
                 CityCard(city = it, onClick = {
